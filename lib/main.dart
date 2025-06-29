@@ -59,13 +59,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<TodoItem> todos = [
-    TodoItem(title: 'Yeni is', subtitle: 'is detayi'),
-    TodoItem(title: 'Yeni is2', subtitle: 'is detayi2'),
-    TodoItem(title: 'Yeni is3', subtitle: 'is detayi3'),
-    TodoItem(title: 'Yeni is4', subtitle: 'is detayi4'),
-    TodoItem(title: 'Yeni is5', subtitle: 'is detayi5'),
-  ];
+  List<TodoItem> todos = [];
 
   void _editTodo(TodoItem? editingTodo) async {
     if (editingTodo == null) {
