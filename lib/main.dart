@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/dialogs/edit_todo.dialog.dart';
+import 'package:todo_app/models/todo.model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -63,12 +65,14 @@ class _MyHomePageState extends State<MyHomePage> {
     TodoItem(title: 'Yeni is5', subtitle: 'is detayi5'),
   ];
 
-  void _addTodo() {
-    setState(() {
-      todos.add(TodoItem(
-          title: 'Yeni is ${todos.length + 1}',
-          subtitle: 'is detayi ${todos.length + 1}'));
-    });
+  void _addTodo() async {
+    final TodoItem? newTodo = await showEditTodoDialog(context);
+
+    if (newTodo != null) {
+      setState(() {
+        todos.add(newTodo);
+      });
+    }
   }
 
   @override
@@ -104,13 +108,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-}
-
-class TodoItem {
-  String title;
-  String subtitle;
-
-  TodoItem({required this.title, required this.subtitle});
 }
 
 class MyListItem extends StatelessWidget {
