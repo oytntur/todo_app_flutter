@@ -10,17 +10,21 @@ Future<TodoItem?> showEditTodoDialog(BuildContext context) async {
       builder: (context) => AlertDialog(
             title: const Text('Yeni Todo olustur'),
             content: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: titleFormControl,
                   autocorrect: false,
-                  decoration: const InputDecoration(labelText: 'Todo baslik'),
+                  decoration: const InputDecoration(
+                      labelText: 'Todo baslik', border: OutlineInputBorder()),
                 ),
+                const SizedBox(height: 16),
                 TextField(
                   controller: subtitleFormControl,
                   autocorrect: false,
-                  decoration:
-                      const InputDecoration(labelText: 'Todo ek baslik'),
+                  decoration: const InputDecoration(
+                      labelText: 'Todo ek baslik',
+                      border: OutlineInputBorder()),
                 ),
               ],
             ),
