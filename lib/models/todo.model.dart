@@ -1,7 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 class TodoItem {
-  String? uuid;
+  String uuid;
   String title;
   String subtitle;
 

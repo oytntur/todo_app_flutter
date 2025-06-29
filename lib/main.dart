@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:todo_app/dialogs/edit_todo.dialog.dart';
 import 'package:todo_app/models/todo.model.dart';
@@ -65,12 +67,29 @@ class _MyHomePageState extends State<MyHomePage> {
     TodoItem(title: 'Yeni is5', subtitle: 'is detayi5'),
   ];
 
-  void _addTodo() async {
-    final TodoItem? newTodo = await showEditTodoDialog(context);
+  void _editTodo(TodoItem? editingTodo) async {
+    if (editingTodo == null) {
+      final TodoItem? newTodo = await showEditTodoDialog(context);
 
-    if (newTodo != null) {
+      if (newTodo != null) {
+        setState(() {
+          todos.add(newTodo);
+        });
+      }
+    } else {
+      final updatedTodo =
+          await showEditTodoDialog(context, todoItem: editingTodo);
+      //find and replace the todo in the list
+
+      if (updatedTodo == null) return;
+
       setState(() {
-        todos.add(newTodo);
+        final index = todos.indexWhere((todo) => todo.uuid == updatedTodo.uuid);
+        if (index != -1) {
+          print('before: ${todos[index]}');
+          todos[index] = updatedTodo;
+          print('after: ${todos[index]}');
+        }
       });
     }
   }
@@ -81,7 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
       itemCount: todos.length,
       itemBuilder: (context, index) {
         final todo = todos[index];
-        return MyListItem(title: todo.title, subtitle: todo.uuid ?? 'nouuid');
+        return MyListItem(
+            todoItem: todo, onTap: _editTodo // Use uuid or title as key
+            );
       },
     );
     // This method is rerun every time setState is called, for instance as done
@@ -102,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: todoList,
       floatingActionButton: FloatingActionButton(
-        onPressed: _addTodo,
+        onPressed: () => _editTodo(null),
         tooltip: 'Add Todo',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -111,21 +132,23 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class MyListItem extends StatelessWidget {
-  final String title;
-  final String subtitle;
+  final TodoItem todoItem;
+  final void Function(TodoItem) onTap;
 
-  const MyListItem({super.key, required this.title, required this.subtitle});
+  const MyListItem({
+    super.key,
+    required this.todoItem,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(title),
-      subtitle: Text(subtitle),
+      title: Text(todoItem.title),
+      subtitle: Text(todoItem.subtitle),
       leading: const Icon(Icons.label),
       trailing: const Icon(Icons.arrow_forward_ios),
-      onTap: () {
-        print('clicked $title');
-      },
+      onTap: () => onTap(todoItem),
     );
   }
 }

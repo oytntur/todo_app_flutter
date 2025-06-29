@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/models/todo.model.dart';
 
-Future<TodoItem?> showEditTodoDialog(BuildContext context) async {
-  final titleFormControl = TextEditingController();
-  final subtitleFormControl = TextEditingController();
+Future<TodoItem?> showEditTodoDialog(BuildContext context,
+    {TodoItem? todoItem}) async {
+  final titleFormControl = TextEditingController(text: todoItem?.title ?? '');
+  final subtitleFormControl =
+      TextEditingController(text: todoItem?.subtitle ?? '');
+
+  final isEdit = todoItem != null;
 
   return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-            title: const Text('Yeni Todo olustur'),
+            title: Text(isEdit ? 'Todo Duzenle' : 'Todo ekle'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -34,12 +38,13 @@ Future<TodoItem?> showEditTodoDialog(BuildContext context) async {
                   child: const Text('Cancel')),
               TextButton(
                   onPressed: () {
-                    final todoItem = TodoItem(
+                    final returningTodoItem = TodoItem(
+                        uuid: todoItem?.uuid,
                         title: titleFormControl.text,
                         subtitle: subtitleFormControl.text);
-                    Navigator.pop(context, todoItem);
+                    Navigator.pop(context, returningTodoItem);
                   },
-                  child: const Text('Add Todo'))
+                  child: Text(isEdit ? 'Edit Todo' : 'Add Todo'))
             ],
           ));
 }
