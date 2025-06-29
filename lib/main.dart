@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
       itemCount: todos.length,
       itemBuilder: (context, index) {
         final todo = todos[index];
-        return MyListItem(title: todo.title, subtitle: todo.subtitle);
+        return MyListItem(title: todo.title, subtitle: todo.uuid ?? 'nouuid');
       },
     );
     // This method is rerun every time setState is called, for instance as done
