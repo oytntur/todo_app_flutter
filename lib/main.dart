@@ -1,10 +1,17 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:todo_app/dialogs/edit_todo.dialog.dart';
 import 'package:todo_app/models/todo.model.dart';
+import 'firebase_options.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(); // .env verilerini oku
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions
+        .currentPlatform, // artık .env'den gelen değerleri kullanır
+  );
   runApp(const MyApp());
 }
 
