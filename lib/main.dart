@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:todo_app/dialogs/edit_todo.dialog.dart';
@@ -70,40 +71,46 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _editTodo(TodoItem? editingTodo) async {
     if (editingTodo == null) {
-      final TodoItem? newTodo = await showEditTodoDialog(context);
-
-      if (newTodo != null) {
-        setState(() {
-          todos.add(newTodo);
-        });
-      }
+      await showEditTodoDialog(context);
     } else {
-      final updatedTodo =
-          await showEditTodoDialog(context, todoItem: editingTodo);
+      await showEditTodoDialog(context, todoItem: editingTodo);
       //find and replace the todo in the list
-
-      if (updatedTodo == null) return;
-
-      setState(() {
-        final index = todos.indexWhere((todo) => todo.uuid == updatedTodo.uuid);
-        if (index != -1) {
-          print('before: ${todos[index]}');
-          todos[index] = updatedTodo;
-          print('after: ${todos[index]}');
-        }
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final todoList = ListView.builder(
-      itemCount: todos.length,
-      itemBuilder: (context, index) {
-        final todo = todos[index];
-        return MyListItem(
-            todoItem: todo, onTap: _editTodo // Use uuid or title as key
+    final todoList = StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('todos').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Hata: ${snapshot.error}'));
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('Henüz bir todo yok.'));
+        }
+
+        final documents = snapshot.data!.docs;
+        final todos = documents.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return TodoItem.fromJson(data);
+        }).toList();
+
+        return ListView.builder(
+          itemCount: todos.length,
+          itemBuilder: (context, index) {
+            final todo = todos[index];
+            return MyListItem(
+              todoItem: todo,
+              onTap: _editTodo,
             );
+          },
+        );
       },
     );
     // This method is rerun every time setState is called, for instance as done

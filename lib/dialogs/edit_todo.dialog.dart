@@ -42,6 +42,7 @@ Future<TodoItem?> showEditTodoDialog(BuildContext context,
                         uuid: todoItem?.uuid,
                         title: titleFormControl.text,
                         subtitle: subtitleFormControl.text);
+                    returningTodoItem.addOrUpdateTodo();
                     Navigator.pop(context, returningTodoItem);
                   },
                   child: Text(isEdit ? 'Edit Todo' : 'Add Todo'))
